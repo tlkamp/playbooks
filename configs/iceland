@@ -1,0 +1,10 @@
+server {
+  server_name vacations.tlkamp.com;
+  access_log  /var/logs/iceland.log combined;
+  listen      80;
+  index       index.html;
+
+  location /iceland {
+    alias /var/www/iceland/fend-project7-neighborhood/build;
+  }
+}

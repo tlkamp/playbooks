@@ -35,3 +35,25 @@
         name: catalog
         state: present
         shell: /usr/sbin/nologin
+    - name: copy nginx config
+      copy:
+        src: "configs/{{ item }}"
+        dest: "/etc/nginx/sites-available/{{ item }}"
+      loop:
+        - default
+        - iceland
+      register: nginx_copied
+    - name: create symlinks for sites
+      file:
+        src: "/etc/nginx/sites-available/{{ item }}"
+        dest: "/etc/nginx/sites-enabled/{{ item }}"
+        state: link
+      loop:
+        - default
+        - iceland
+      register: symlink_created
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+      when: nginx_copied.changed or symlink_created.changed
