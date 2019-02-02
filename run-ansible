@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+ansible-playbook \
+ --become \
+ --user ubuntu \
+ --inventory hosts \
+ --ssh-extra-args='-i ~/.ssh/udacity-webserver.pem -p 2200' \
+ ubuntu-web.yaml
