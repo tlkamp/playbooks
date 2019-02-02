@@ -1,0 +1,17 @@
+---
+- hosts: webservers
+  remote_user: ubuntu 
+  tasks:
+    - name: Apt-get update
+      apt:
+        update_cache: yes
+    - name: Ensure nginx is installed
+      apt:
+        name: nginx
+        state: present
+    - name: Ensure nginx is running
+      systemd:
+        state: started
+        name: nginx
+        enabled: yes
+...
