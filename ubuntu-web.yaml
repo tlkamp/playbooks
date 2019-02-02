@@ -30,3 +30,8 @@
         - nginx
         - mygunicorn.service
         - postgresql
+    - name: Ensure catalog user present
+      user:
+        name: catalog
+        state: present
+        shell: /usr/sbin/nologin
