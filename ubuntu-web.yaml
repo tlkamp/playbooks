@@ -1,17 +1,29 @@
 ---
 - hosts: webservers
-  remote_user: ubuntu 
   tasks:
     - name: Apt-get update
       apt:
         update_cache: yes
-    - name: Ensure nginx is installed
+    - name: Ensure ufw is enabled
+      ufw:
+        state: enabled
+    - name: Ensure services are installed
       apt:
-        name: nginx
+        name: "{{ item }}"
         state: present
-    - name: Ensure nginx is running
+      loop:
+        - nginx
+        - postgresql
+    - name: Ensure gunicorn installed
+      pip:
+        name: gunicorn
+        state: present
+    - name: Ensure services are running
       systemd:
         state: started
-        name: nginx
+        name: "{{ item }}"
         enabled: yes
-...
+      loop:
+        - nginx
+        - mygunicorn.service
+        - postgresql
