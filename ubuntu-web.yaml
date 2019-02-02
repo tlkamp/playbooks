@@ -1,8 +1,11 @@
 ---
 - hosts: webservers
+  gather_facts: no
   tasks:
-    - name: Apt-get update
+    - name: apt updates
       apt:
+        autoremove: yes
+        upgrade: dist
         update_cache: yes
     - name: Ensure ufw is enabled
       ufw:
