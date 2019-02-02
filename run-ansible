@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
 
+set -e
+
+# Do syntax check first
+echo -e "Executing syntax check.\n"
+ansible-playbook \
+ --inventory hosts \
+ --syntax-check \
+ "${1}"
+
+# Execute the playbook.
+echo -e "\nExecuting playbook.\n"
 ansible-playbook \
  --become \
  --user ubuntu \
  --inventory hosts \
  --ssh-extra-args='-i ~/.ssh/udacity-webserver.pem -p 2200' \
- ubuntu-web.yaml
+ "${1}"
