@@ -1,0 +1,38 @@
+---
+- name: Monitoring
+  hosts: webservers
+  gather_facts: no
+  tasks:
+    - name: Check for Docker Network
+      command: docker network ls -q --filter 'name=prom'
+      register: output
+      changed_when: output.stdout == ''
+    - debug:
+        msg: "{{ output.stdout }}"
+      when: output.stdout != ''
+    - name: Create Docker Network
+      command: docker network create --attachable prom
+      when: output.stdout == ''
+    - name: Deploy Node Exporter
+      docker_container:
+        name: node-exporter
+        image: quay.io/prometheus/node-exporter
+        command: --path.rootfs /host
+        state: started
+        restart_policy: unless-stopped
+        network_mode: host
+        pid_mode: host
+        published_ports:
+          - localhost:9100:9100
+        volumes:
+          - /:/host:ro,rslave
+    - name: Deploy Prometheus
+      docker_container:
+        name: prometheus
+        image: prom/prometheus
+        state: started
+        restart_policy: unless-stopped
+        networks:
+          - name: prom
+        published_ports:
+          - localhost:9090:9090
