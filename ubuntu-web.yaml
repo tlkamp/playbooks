@@ -18,7 +18,7 @@
         - nginx
         - postgresql
         - docker
-    - name: Ensure python packges installed
+    - name: Ensure python packages installed
       pip:
         name: "{{ item }}"
         state: present
