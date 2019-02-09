@@ -17,10 +17,14 @@
       loop:
         - nginx
         - postgresql
-    - name: Ensure gunicorn installed
+        - docker
+    - name: Ensure python packges installed
       pip:
-        name: gunicorn
+        name: "{{ item }}"
         state: present
+      loop:
+        - gunicorn
+        - docker
     - name: Ensure services are running
       systemd:
         state: started
@@ -30,6 +34,7 @@
         - nginx
         - mygunicorn.service
         - postgresql
+        - docker
     - name: Ensure catalog user present
       user:
         name: catalog
