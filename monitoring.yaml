@@ -20,18 +20,37 @@
         command: --path.rootfs /host
         state: started
         restart_policy: unless-stopped
-        network_mode: host
+        networks:
+          - name: prom
         pid_mode: host
         published_ports:
           - localhost:9100:9100
         volumes:
           - /:/host:ro,rslave
+    - name: Create Prometheus Config Dir
+      file:
+        path: /etc/prometheus/
+        state: directory
+        owner: root
+        group: root
+        mode: 0775
+    - name: Copy Prometheus Config
+      copy:
+        src: "monitoring_config/prometheus.yml"
+        dest: "/etc/prometheus/prometheus.yml"
+      register: prom_conf
     - name: Deploy Prometheus
       docker_container:
         name: prometheus
         image: prom/prometheus
         state: started
+        command: --config.file=/etc/prometheus/prometheus.yml
+        # Restart prometheus if/when the config file changes.
+        restart: "{{ 'yes' if prom_conf.changed else 'no' }}"
         restart_policy: unless-stopped
+        # TODO: Add a mount for prometheus data
+        volumes:
+          - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
         networks:
           - name: prom
         published_ports:
