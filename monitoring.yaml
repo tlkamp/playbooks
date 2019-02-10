@@ -36,3 +36,15 @@
           - name: prom
         published_ports:
           - localhost:9090:9090
+    - name: Deploy Grafana
+      docker_container:
+        name: grafana
+        image: grafana/grafana
+        state: started
+        env:
+          GF_SERVER_DOMAIN: monitoring.tlkamp.com
+        restart_policy: unless-stopped
+        networks:
+          - name: prom
+        published_ports:
+          - localhost:3000:3000
