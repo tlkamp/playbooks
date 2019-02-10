@@ -47,6 +47,7 @@
       loop:
         - default
         - iceland
+        - monitoring
       register: nginx_copied
     - name: create symlinks for sites
       file:
@@ -56,6 +57,7 @@
       loop:
         - default
         - iceland
+        - monitoring
       register: symlink_created
     - name: restart nginx
       systemd:
