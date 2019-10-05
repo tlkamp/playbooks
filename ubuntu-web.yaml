@@ -7,9 +7,34 @@
         autoremove: yes
         upgrade: dist
         update_cache: yes
+    - name: Configure alt ssh port
+      lineinfile:
+        dest: "/etc/ssh/sshd_config"
+        regexp: "^Port"
+        line: "Port 2200"
+      register: sshd_config
+    - name: Restart sshd
+      service:
+        name: sshd
+        state: restarted
+      when: sshd_config.changed
     - name: Ensure ufw is enabled
       ufw:
         state: enabled
+    - name: Deny SSH on 22
+      ufw:
+        rule: deny
+        port: 22
+    - name: Allow SSH, HTTP, HTTPS, NTP
+      ufw:
+        rule: allow
+        proto: tcp
+        port: '{{ item }}'
+      loop:
+        - 80   # HTTP
+        - 443  # HTTPS
+        - 123  # NTP
+        - 2200 # SSH
     - name: Ensure services are installed
       apt:
         name: "{{ item }}"
